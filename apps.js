@@ -107,7 +107,7 @@ function initApp(id, win){
     $$("[data-accent]", win).forEach(b => b.addEventListener("click", ()=> applyAccent(b.dataset.accent)));
     const rs = $("[data-reset-settings]", win);
     if(rs) rs.addEventListener("click", ()=>{
-      applyTheme("light"); applyAccent("#0a84ff"); setWallpaper("wp-streaks");
+      applyTheme("dark"); applyAccent("#0a84ff"); setWallpaper("wp-streaks");
       applyDockSize(50, true); applyReduceTransparency(false, true);
       $("#bright").value = 100; $("#desktop").style.filter = "";
       toast("Settings reset ho gayi — sab default par wapas.");
@@ -319,11 +319,13 @@ function initMusic(win){
 }
 
 /* Appearance + accent (Settings) */
-function applyTheme(t){
+function applyTheme(t, silent = false){
+  settingsStore.theme = t;
+  if(!silent) saveSettings();
   if(t === "dark") document.documentElement.dataset.theme = "dark";
   else delete document.documentElement.dataset.theme;
   $$("[data-theme-set]").forEach(b => b.classList.toggle("sel", b.dataset.themeSet === t));
-  toast("Appearance: " + (t === "dark" ? "Dark" : "Light"));
+  if(!silent) toast("Appearance: " + (t === "dark" ? "OLED Black" : "Light"));
 }
 function applyAccent(color){
   document.documentElement.style.setProperty("--accent", color);
@@ -333,11 +335,12 @@ function applyAccent(color){
 
 /* Settings store — dockSize + reduceTransparency (localStorage me persist) */
 var SETTINGS_KEY = "keshavos-settings-v1";
-var settingsStore = { dockSize: 50, reduceTransparency: false, wallpaper: "wp-streaks" };
+var settingsStore = { theme: "dark", dockSize: 50, reduceTransparency: false, wallpaper: "wp-streaks" };
 var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
 try{
   var savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
   if(savedSettings){
+    if(savedSettings.theme === "light") settingsStore.theme = "light";
     if(typeof savedSettings.dockSize === "number") settingsStore.dockSize = Math.min(72, Math.max(40, savedSettings.dockSize));
     if(typeof savedSettings.reduceTransparency === "boolean") settingsStore.reduceTransparency = savedSettings.reduceTransparency;
     if(typeof savedSettings.wallpaper === "string" && WP_ALL.indexOf(savedSettings.wallpaper) !== -1) settingsStore.wallpaper = savedSettings.wallpaper;
@@ -767,6 +770,7 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
   });
 })();
 
+applyTheme(settingsStore.theme, true);
 applyDockSize(settingsStore.dockSize, true);
 applyReduceTransparency(settingsStore.reduceTransparency, true);
 setWallpaper(settingsStore.wallpaper, true);
