@@ -1,11 +1,13 @@
 # KeshavOS
 
-Keshav Jangid’s browser desktop portfolio. [Open the desktop](https://keshavos-site.vercel.app/) or [read the plain portfolio](https://keshavos-site.vercel.app/about.html).
+Keshav Jangid's portfolio presented as an interactive desktop. Explore projects through app windows, use Spotlight to jump between sections, play the featured track preview, or leave a Guestbook note.
 
-Run `python -m http.server 8000` from this folder and open `http://localhost:8000`. The static site needs no build or environment variables for the portfolio.
+[Open KeshavOS](https://keshavos-site.vercel.app/) · [Read the plain portfolio](https://keshavos-site.vercel.app/about.html)
 
-- `index.html` contains the desktop and app templates. `desktop.css` styles the shell and `portfolio.css` styles portfolio content.
-- `desktop.js` manages windows. `apps.js`, `mobile.js`, and `guestbook-contact.js` handle built-in apps, the mobile shell, and React widgets.
-- `portfolio.js` holds project content shared by the desktop and `about.html`. `workspace.js` adds project and profile apps. `search.js` handles Spotlight.
-- Desktop search opens with Ctrl+K or Command+K. Mobile uses the Search button on the home screen.
-- Ask Keshav answers from built-in portfolio information. Guestbook signatures stay in the current browser. Existing React widgets and embedded media load their browser dependencies over the internet.
+## Run locally
+
+Run `python -m http.server 8000` from the repository root and open `http://localhost:8000`. The frontend uses plain HTML, CSS and JavaScript. Press **Ctrl+K** or **Command+K** to open Spotlight.
+
+## Backend
+
+The Guestbook API runs on Railway. New submissions are stored privately for review. See [backend/README.md](backend/README.md) for configuration and endpoints.
