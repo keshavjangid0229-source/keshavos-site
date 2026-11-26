@@ -846,3 +846,9 @@ body.ios-mode .window .traffic .y, body.ios-mode .window .traffic .g{display:non
 .np-controls{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:8px;margin-top:12px;font-size:11px;font-variant-numeric:tabular-nums}
 .np-controls .song-seek{margin:0;min-width:0;accent-color:#ffe0e6}
 .np-controls .np-btn{background:#fff4f6;color:#821932}
+
+.widget-pair{display:grid;grid-template-columns:236px minmax(0,1fr);gap:12px;align-items:stretch;width:min(418px,calc(100vw - 36px))}
+.widget-pair > .widget{width:100%;min-width:0}
+.widget-pair .widget + .widget{padding:16px 12px}
+.cal-mini .dow{font-size:9.5px;font-weight:700;opacity:.55}
+@media (max-width:940px){.widget-pair{width:min(350px,calc(100vw - 36px));grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}

@@ -227,15 +227,31 @@ function initCalc(win){
   });
 }
 
-/* Calendar grids — November 2026 (1 Nov 2026 is a Sunday) */
-function buildCalGrid(el, mini){
-  const DOW = ["S","M","T","W","T","F","S"];
-  let html = DOW.map(d=>'<span class="'+(mini?"dow":"dow")+'" style="font-size:'+(mini?9.5:11)+'px;color:var(--win-sub);font-weight:700">'+d+"</span>").join("");
-  for(let d = 1; d <= 30; d++){
-    const cls = d === 4 ? "today" : ([4,7,14].includes(d) ? "event" : "");
-    html += mini
-      ? '<span class="'+(d===4?"today":"")+'">'+d+"</span>"
-      : '<span class="d '+cls+'">'+d+"</span>";
+/* Keep the calendar on the same New Delhi date as the clock. */
+const calendarParts = new Intl.DateTimeFormat("en-IN", {
+  timeZone:"Asia/Kolkata", year:"numeric", month:"numeric", day:"numeric"
+});
+const calendarHeading = new Intl.DateTimeFormat("en-IN", {
+  timeZone:"Asia/Kolkata", month:"long", year:"numeric"
+});
+function buildCalGrid(el, mini, now = new Date()){
+  const { year, month, day } = Object.fromEntries(calendarParts.formatToParts(now)
+    .filter(part => part.type !== "literal").map(part => [part.type, Number(part.value)]));
+  const key = year + "-" + month + "-" + day;
+  if(el.dataset.date === key) return;
+  el.dataset.date = key;
+  const root = mini ? el.parentElement : el.closest(".win") || el.parentElement;
+  const title = root.querySelector(mini ? "#wCalTitle" : "#calTitle");
+  if(title) title.textContent = calendarHeading.format(now);
+  const subtitle = root.querySelector("#calDate");
+  if(subtitle) subtitle.textContent = $("#wDate").textContent;
+  const first = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
+  const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const weekdays = ["S","M","T","W","T","F","S"];
+  let html = weekdays.map(label => '<span class="dow">' + label + '</span>').join("");
+  html += '<span aria-hidden="true"></span>'.repeat(first);
+  for(let date = 1; date <= days; date++){
+    html += '<span class="' + (mini ? "" : "d ") + (date === day ? 'today" aria-current="date' : "") + '">' + date + '</span>';
   }
   el.innerHTML = html;
 }
@@ -512,6 +528,8 @@ function tickClock(){
   $("#wTime").textContent = t24.format(now);
   const df = new Intl.DateTimeFormat("en-IN", { timeZone:"Asia/Kolkata", weekday:"long", day:"numeric", month:"long" });
   $("#wDate").textContent = df.format(now);
+  buildCalGrid($("#wCal"), true, now);
+  $$("#calGrid").forEach(grid => buildCalGrid(grid, false, now));
   const tp = {};
   new Intl.DateTimeFormat("en-GB", { timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23" }).formatToParts(now).forEach(x => tp[x.type] = parseInt(x.value, 10) || 0);
   const ah = $("#acHour"), am = $("#acMin"), as = $("#acSec");
@@ -711,7 +729,6 @@ applyDockSize(settingsStore.dockSize, true);
 applyReduceTransparency(settingsStore.reduceTransparency, true);
 setWallpaper(settingsStore.wallpaper, true);
 buildDock(); buildLaunchpad(); tickClock();
-buildCalGrid($("#wCal"), true);
 window.addEventListener("load", ()=>{
   setTimeout(()=>{
     $("#boot").classList.add("done");

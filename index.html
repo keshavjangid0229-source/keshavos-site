@@ -44,7 +44,7 @@
       <button id="ccBtn" aria-label="Control Center">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="7" rx="3.5"/><rect x="2" y="13" width="20" height="7" rx="3.5"/><circle cx="8.5" cy="7.5" r="1.6" fill="currentColor"/><circle cx="15.5" cy="16.5" r="1.6" fill="currentColor"/></svg>
       </button>
-      <span id="clock">Wed 4 Nov&nbsp;&nbsp;11:36 pm</span>
+      <span id="clock"></span>
     </div>
   </header>
 
@@ -67,6 +67,7 @@
 
   <!-- DESKTOP WIDGETS -->
   <div id="widgets">
+    <div class="widget-pair">
     <div class="widget" id="clockWidget">
       <div class="analog" aria-hidden="true">
         <span class="num" style="top:6px; left:50%; transform:translateX(-50%)">12</span>
@@ -78,10 +79,13 @@
         <span class="hand h-sec" id="acSec"></span>
         <span class="pin"></span>
       </div>
-      <div class="w-date" id="wDate" style="text-align:center">Wednesday, 4 November</div>
-      <div class="w-date" id="wTime" style="text-align:center; font-size:12.5px; opacity:.7">11:36 · New Delhi, India</div>
-      <h4 id="wCalTitle" style="margin-top:14px">November 2026</h4>
+      <div class="w-date" id="wDate" style="text-align:center"></div>
+      <div class="w-date" id="wTime" style="text-align:center; font-size:12.5px; opacity:.7"></div>
+    </div>
+    <div class="widget" aria-label="Current month">
+      <h4 id="wCalTitle"></h4>
       <div class="cal-mini" id="wCal"></div>
+    </div>
     </div>
     <div class="widget" id="npWidget">
       <div class="np-row">
@@ -184,7 +188,7 @@
         <div class="ios-widgets">
           <div class="widget ios-widget ios-clockw">
             <div class="t" id="iosWTime">9:41</div>
-            <div class="d" id="iosWDate">Thursday, 5 November</div>
+            <div class="d" id="iosWDate"></div>
             <div class="sub">New Delhi, India</div>
           </div>
           <div class="widget ios-widget" id="iosNp">
@@ -435,8 +439,8 @@ Welcome to KeshavOS — type <b>help</b> to see commands.</div>
 
 <template id="tpl-calendar">
   <div class="cal-wrap">
-    <h3 id="calTitle">November 2026</h3>
-    <div class="sub">Wednesday, 4 November — aaj ka din</div>
+    <h3 id="calTitle"></h3>
+    <div class="sub" id="calDate"></div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-events">
       <div><i style="background:#0a84ff"></i><b>Portfolio launch</b><span>· All day</span></div>
