@@ -241,7 +241,7 @@ function buildCalGrid(el, mini, now = new Date()){
   if(el.dataset.date === key) return;
   el.dataset.date = key;
   const root = mini ? el.parentElement : el.closest(".win") || el.parentElement;
-  const title = root.querySelector(mini ? "#wCalTitle" : "#calTitle");
+  const title = root.querySelector(mini ? "[data-calendar-heading]" : "#calTitle");
   if(title) title.textContent = calendarHeading.format(now);
   const subtitle = root.querySelector("#calDate");
   if(subtitle) subtitle.textContent = $("#wDate").textContent;
@@ -528,7 +528,8 @@ function tickClock(){
   $("#wTime").textContent = t24.format(now);
   const df = new Intl.DateTimeFormat("en-IN", { timeZone:"Asia/Kolkata", weekday:"long", day:"numeric", month:"long" });
   $("#wDate").textContent = df.format(now);
-  buildCalGrid($("#wCal"), true, now);
+  $("#iosWDate").textContent = $("#wDate").textContent;
+  $$("[data-mini-calendar]").forEach(grid => buildCalGrid(grid, true, now));
   $$("#calGrid").forEach(grid => buildCalGrid(grid, false, now));
   const tp = {};
   new Intl.DateTimeFormat("en-GB", { timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23" }).formatToParts(now).forEach(x => tp[x.type] = parseInt(x.value, 10) || 0);
@@ -539,6 +540,7 @@ function tickClock(){
   const wt = $("#wTime"); if(wt && wt.textContent.indexOf("·") >= 0) wt.textContent = t24.format(now) + " · New Delhi, India";
 }
 setInterval(tickClock, 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) tickClock(); });
 
 /* ---------------- MENUS ---------------- */
 const sleepOverlay = document.createElement("div");

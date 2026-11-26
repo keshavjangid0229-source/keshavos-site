@@ -193,8 +193,6 @@
     var t = parts.hour + ":" + parts.minute;
     var st = document.getElementById("iosTime"); if(st) st.textContent = t;
     var wt = document.getElementById("iosWTime"); if(wt) wt.textContent = t;
-    var wd = document.getElementById("iosWDate");
-    if(wd) wd.textContent = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", weekday: "long", day: "numeric", month: "long" }).format(now);
   }
   iosTick();
   setInterval(iosTick, 1000);
