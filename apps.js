@@ -256,15 +256,34 @@ const SongPlayer = (function(){
   return {
     toggle(){ if(audio.paused || audio.ended) play(); else audio.pause(); },
     restart(){ audio.currentTime = 0; play(); },
+    seek(seconds){
+      if (Number.isFinite(audio.duration) && Number.isFinite(seconds)) {
+        audio.currentTime = Math.max(0, Math.min(seconds, audio.duration));
+        notify();
+      }
+    },
     subscribe(listener){ listeners.push(listener); listener(state()); }
   };
 })();
+
+function bindSongSeek(input){
+  if (!input) return;
+  input.addEventListener("click", event => event.stopPropagation());
+  input.addEventListener("input", () => SongPlayer.seek(input.valueAsNumber));
+  SongPlayer.subscribe(state => {
+    input.disabled = state.total <= 0;
+    input.max = String(state.total);
+    input.value = String(state.elapsed);
+    input.setAttribute("aria-valuetext", fmtSongTime(state.elapsed) + " of " + fmtSongTime(state.total));
+  });
+}
 
 function fmtSongTime(sec){ sec = Math.max(0, Math.floor(sec || 0)); const m = Math.floor(sec / 60), s = sec % 60; return m + ":" + (s < 10 ? "0" : "") + s; }
 
 function initMusic(win){
   const play = $("#mPlay", win), prog = $("#musicProg", win), viz = $("#viz", win), art = $("#ytDockMusic", win);
   if(!play) return;
+  bindSongSeek(prog);
   /* Sirf ek hi track hai — hidden gem. Baaki music kahin nahi dikhta.
      Playback asli hai — shared SongPlayer widget ke saath full sync. */
   play.addEventListener("click", ()=> SongPlayer.toggle());
@@ -277,7 +296,6 @@ function initMusic(win){
     play.textContent = s.playing ? "⏸" : "▶";
     if(viz) viz.classList.toggle("play", s.playing);
     if(art) art.classList.toggle("playing", s.playing);
-    if(prog) prog.style.width = (s.frac * 100).toFixed(1) + "%";
     if(mEl) mEl.textContent = fmtSongTime(s.elapsed);
     if(mTt) mTt.textContent = fmtSongTime(s.total);
   });
@@ -414,6 +432,7 @@ function initBM25(win){
 (function initNpWidget(){
   const w = $("#npWidget"); if(!w) return;
   const btn = $("#npPlay"), prog = $("#npProg");
+  bindSongSeek(prog);
   const npEl = $("#npElapsed"), npTt = $("#npTotal");
   $$(".np-eq i", w).forEach((bar, i)=> bar.style.animationDelay = (i * 0.08) + "s");
   btn.addEventListener("click", (e)=>{
@@ -423,7 +442,6 @@ function initBM25(win){
   SongPlayer.subscribe((s)=>{
     btn.textContent = s.playing ? "⏸" : "▶";
     w.classList.toggle("playing", s.playing);
-    prog.style.width = (s.frac * 100).toFixed(1) + "%";
     if(npEl) npEl.textContent = fmtSongTime(s.elapsed);
     if(npTt) npTt.textContent = fmtSongTime(s.total);
   });

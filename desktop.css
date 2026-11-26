@@ -823,3 +823,6 @@ body.ios-mode .window .traffic .y, body.ios-mode .window .traffic .g{display:non
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01s !important; transition-duration:.01s !important}
 }
+
+.song-seek { display:block; width:100%; cursor:pointer; accent-color:#fc5c7d; }
+.song-seek:disabled { cursor:default; }

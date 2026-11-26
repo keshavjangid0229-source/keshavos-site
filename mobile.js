@@ -229,7 +229,7 @@
   var npW = document.getElementById("iosNp");
   var npPlay = document.getElementById("iosNpPlay");
   if(npW && npPlay && typeof SongPlayer !== "undefined"){
-    var npProg = document.getElementById("iosNpProg");
+    bindSongSeek(document.getElementById("iosNpProg"));
     var npEl = document.getElementById("iosNpElapsed");
     var npTt = document.getElementById("iosNpTotal");
     $$(".np-eq i", npW).forEach(function(bar, i){ bar.style.animationDelay = (i * 0.08) + "s"; });
@@ -238,7 +238,6 @@
     SongPlayer.subscribe(function(s){
       npPlay.textContent = s.playing ? "⏸" : "▶";
       npW.classList.toggle("playing", s.playing);
-      if(npProg) npProg.style.width = (s.frac * 100).toFixed(1) + "%";
       if(npEl) npEl.textContent = fmtSongTime(s.elapsed);
       if(npTt) npTt.textContent = fmtSongTime(s.total);
     });
