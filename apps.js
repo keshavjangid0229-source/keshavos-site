@@ -650,11 +650,11 @@ console.log("%c👋 Namaste, fellow developer! KeshavOS ke console me tumhara sw
 console.log("%cYe desktop ek portfolio hai jo pura browser me chalta hai — windows, dock, terminal, sab haath se bana hai. Code dekhna hai to GitHub par milo: github.com/keshavjangid0229-source", "font-size:12px; color:#888");
 console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — aur Terminal me 'neofetch' ya 'sudo hire-me' likhne par kuch khaas hota hai. Khud dhoondho!", "font-size:12px; color:#e07b00");
 
-/* Desktop cat. A placed cat stays put until the page is refreshed. */
+/* The cat pauses for interaction, then resumes wandering. */
 (function initCat(){
   const cat = $("#wanderingCat");
   const bubble = $("#catBubble");
-  let drag = null, placed = false, hovered = false, bubbleTimer;
+  let drag = null, hovered = false, bubbleTimer, resumeAt = 0;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 
   function pet(){
@@ -683,7 +683,7 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
   cat.addEventListener("pointermove", event => {
     if(drag?.id !== event.pointerId) return;
     if(!drag.moved && Math.hypot(event.clientX-drag.x,event.clientY-drag.y) < 6) return;
-    drag.moved = placed = true;
+    drag.moved = true;
     cat.classList.add("cat-dragging");
     cat.classList.remove("petted");
     bubble.classList.remove("show");
@@ -698,7 +698,8 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
   });
   function release(event){
     if(drag?.id !== event.pointerId) return;
-    if(!drag.moved && event.type === "pointerup") pet();
+    if(drag.moved) resumeAt = Date.now() + 2400;
+    else if(event.type === "pointerup") pet();
     drag = null;
     cat.classList.remove("cat-dragging");
   }
@@ -710,9 +711,9 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
     if(event.key === "Enter" || event.key === " "){ event.preventDefault(); pet(); }
   });
   setInterval(() => {
-    if(placed || drag || hovered || cat.classList.contains("petted") || reduced.matches || document.hidden) return;
-    cat.style.setProperty("--cat-x", (6 + Math.random() * 76) + "%");
-    cat.style.setProperty("--cat-y", (14 + Math.random() * 62) + "%");
+    if(Date.now() < resumeAt || drag || hovered || cat.classList.contains("petted") || reduced.matches || document.hidden || !cat.offsetParent) return;
+    cat.style.setProperty("--cat-x", (3 + Math.random() * 91) + "%");
+    cat.style.setProperty("--cat-y", (9 + Math.random() * 75) + "%");
   }, 4200);
 })();
 
