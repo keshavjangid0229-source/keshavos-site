@@ -52,11 +52,30 @@ function GuestbookApp(){
   }, []);
 
   var entries = GB_STORE.entries;
+  var api = document.querySelector('meta[name="keshavos-api"]')?.content.trim().replace(/\/$/, "") || "";
+  var [sending, setSending] = useState(false);
 
-  function submit(e){
+  async function submit(e){
     e.preventDefault();
     var n = name.trim(), m = msg.trim();
     if(!n || !m){ setErr("Naam aur message dono likho — phir Sign dabao."); return; }
+    if (sending) return;
+    if (api) {
+      setSending(true); setErr("");
+      try {
+        var response = await fetch(api + "/guestbook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: n, message: m })
+        });
+        if (!response.ok) throw new Error("Save failed");
+        setMsg("");
+        toast("Guestbook entry saved for review.");
+      } catch {
+        setErr("Could not save your note. Please try again.");
+      } finally { setSending(false); }
+      return;
+    }
     var entry = { id: "g" + Date.now() + Math.floor(Math.random() * 999), name: n, msg: m, ts: Date.now(), likes: 0, liked: false, status: "approved" };
     GB_STORE.entries = [entry].concat(GB_STORE.entries);
     setMsg(""); setErr("");
@@ -103,8 +122,8 @@ function GuestbookApp(){
       h("textarea", { value: msg, onChange: function(e){ setMsg(e.target.value); }, placeholder: "Kuch likho — feedback, salaam, ya bas hello…", maxLength: 280, "aria-label": "Your message" }),
       err ? h("div", { className: "gb-err" }, err) : null,
       h("div", { className: "gb-form-foot" },
-        h("span", { className: "gb-note" }, "Entries are saved in this browser."),
-        h("button", { type: "submit", className: "gb-sign" }, "Sign Guestbook")
+        h("span", { className: "gb-note" }, api ? "New entries are saved for review." : "Entries are saved in this browser."),
+        h("button", { type: "submit", className: "gb-sign", disabled: sending }, sending ? "Saving…" : "Sign Guestbook")
       )
     ),
     h("div", { className: "gb-list" }, entries.map(renderEntry))

@@ -240,234 +240,23 @@ function buildCalGrid(el, mini){
   el.innerHTML = html;
 }
 
-/* Music — REAL AUDIO via YouTube IFrame API (in-widget playback).
-   "Rakhlo Tum Chupaake" — Arpit Bala, official audio track (album Keychain
-   Laalu), video slN2QlYr_-c. Player PURA gaana bajata hai: 0:00 se
-   aakhir tak (3:25, 205s) — koi end cap nahi, koi loop nahi. Total time
-   har jagah asli video duration (3:25) dikhta hai. Ek hi shared player Now
-   Playing widget aur Music app dono ko chalata hai, dono hamesha sync
-   rehte hain. Awaz SIRF site ke apne player se aati hai: widget/app ke
-   Play-Pause controls bajate hain, progress aur elapsed/total ASLI player
-   ke getCurrentTime()/getDuration() se chalte hain.
-
-   Diagnosis (purani silent failure): purana player 1px x 1px, opacity 0
-   holder me banta tha — YouTube embed uss invisibility ko block kar deta
-   hai, playVideo() kabhi start hi nahi hui, aur koi error bhi fire nahi
-   hua (silent fail). Dusri galti: toggle() play dabate hi local state
-   flip kar deta tha bina verify kiye ki player asal me baja ya nahi, aur
-   player ready hone se pehle dabaye gaye play commands kho jate the.
-   Fix: player ab EK ASLI visible mini video area hai — Music app ke
-   screen me (album-art ki jagah, 300x170), jo hamesha DOM me rehta hai.
-   Widget usi shared player ko remotely control karta hai. Play command
-   pending reh sakti hai (player ready hone par execute hoti hai), aur
-   har Play ke ~3s baad getPlayerState() se verify hota hai ki asal me
-   PLAYING hai — na ho to "YouTube par suno" fallback link dikhta hai aur
-   galti console me bhi log hoti hai. Koi autoplay nahi: gaana sirf play
-   dabane par bajta hai. */
+/* One native audio element keeps the desktop, mobile and Music controls in sync. */
 const SongPlayer = (function(){
-  const VIDEO_ID = "slN2QlYr_-c";
-  const SEG_START = 0, SEG_END = 205; /* pura gaana: 0:00 → 3:25 (fallback total; asli total player ke getDuration() se aata hai) */
-  let yt = null, ready = false, failed = false;
-  let playing = false;            /* UI intent — asal state player events se sync hota hai */
-  let wantPlay = false;           /* pending play command (player ready hone se pehle dabaye gaye clicks ke liye) */
-  let simElapsed = 0, simDur = 205; /* 3:25 — sirf last-resort simulated fallback ke liye */
-  let poll = null, simTimer = null, verifyTimer = null, verifyRetried = false;
-  const subs = [];
-  function times(){
-    if(ready && yt && !failed){
-      try{
-        const t = yt.getCurrentTime() || 0;
-        /* Total = asli video duration (3:25) player se; na mile to 205s
-           fallback. Elapsed bhi usi total par clamp. */
-        let dur = 0; try{ dur = yt.getDuration() || 0; }catch(e){}
-        const total = dur > 0 ? dur : SEG_END;
-        return { elapsed: Math.min(Math.max(0, t - SEG_START), total), total: total };
-      }catch(e){}
-    }
-    return { elapsed: simElapsed, total: simDur };
+  const audio = new Audio("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e8/11/c8/e811c82c-e80b-b0b4-7e86-6ced99844767/mzaf_3066499147965018967.plus.aac.p.m4a");
+  audio.preload = "metadata";
+  const listeners = [];
+  function state(){
+    const total = Number.isFinite(audio.duration) ? audio.duration : 0;
+    return { playing: !audio.paused && !audio.ended, elapsed: audio.currentTime, total,
+      frac: total ? audio.currentTime / total : 0 };
   }
-  function frac(){ const tm = times(); return tm.total > 0 ? Math.min(1, tm.elapsed / tm.total) : 0; }
-  function state(){ const tm = times(); return { playing: playing, frac: frac(), elapsed: tm.elapsed, total: tm.total, failed: failed, real: ready && !failed }; }
-  function notify(){ const s = state(); subs.forEach(fn => { try{ fn(s); }catch(e){} }); }
-  function stopTimers(){ if(poll){ clearInterval(poll); poll = null; } if(simTimer){ clearInterval(simTimer); simTimer = null; } }
-  function startSim(){
-    stopTimers();
-    simTimer = setInterval(()=>{ simElapsed += 0.25; if(simElapsed >= simDur){ segmentEnd(); return; } notify(); }, 250);
-  }
-  function runTimers(){
-    stopTimers();
-    if(!playing) return;
-    if(ready && !failed) poll = setInterval(()=>{
-      /* Safety net: gaana asli duration par pakka stop — auto-loop NAHI */
-      try{ if(yt){ const d = yt.getDuration() || SEG_END; if(d > 0 && yt.getCurrentTime() >= d){ segmentEnd(); return; } } }catch(e){}
-      notify();
-    }, 250);
-    else startSim();
-  }
-  function setPlaying(p){ playing = p; runTimers(); notify(); }
-  function fail(reason){
-    if(failed) return;
-    failed = true; ready = false;
-    if(reason) console.warn("[SongPlayer] Real playback fail:", reason, "— fallback link + simulated progress ON");
-    runTimers(); /* baj raha tha to simulated progress par shift ho jao (last resort) */
-    notify();
-  }
-  /* Verify: Play dabane ke ~3s baad asal player state check karo.
-     PLAYING nahi hai to pehle EK auto-retry (unMute + volume 100 +
-     playVideo) aur verify re-arm; retry ke baad bhi na baje to failure
-     VISIBLE karo — "YouTube par suno" fallback link dikhega. */
-  function scheduleVerify(){
-    if(verifyTimer) clearTimeout(verifyTimer);
-    verifyTimer = setTimeout(()=>{
-      verifyTimer = null;
-      if(failed || !wantPlay) return;
-      if(!ready || !yt) return; /* API abhi slow hai — onReady queued play ke baad verify dobara arm karega; API kabhi na aaye to 9s timeout fail karega */
-      let st = -99;
-      try{ st = yt.getPlayerState(); }catch(e){}
-      if(st !== 1 /* YT.PlayerState.PLAYING */){
-        if(!verifyRetried){
-          /* Ek automatic retry: unMute + full volume + playVideo dobara,
-             phir verify aur 3s ke liye re-arm. Uske baad bhi na baje
-             tabhi fallback link dikhega. */
-          verifyRetried = true;
-          console.warn("[SongPlayer] Verify fail (state =", st, ") — ek baar auto-retry: unMute + setVolume(100) + playVideo");
-          try{ yt.unMute(); }catch(e){}
-          try{ yt.setVolume(100); }catch(e){}
-          try{ yt.playVideo(); }catch(e){}
-          scheduleVerify();
-          return;
-        }
-        console.warn("[SongPlayer] Verify fail (retry ke baad bhi) — getPlayerState() =", st, "(1 = PLAYING hona chahiye tha)");
-        fail("play-verify-timeout");
-      }
-    }, 3000);
-  }
-  function doPlay(){
-    wantPlay = true;
-    verifyRetried = false; /* har fresh Play press ko ek auto-retry milega */
-    if(ready && yt && !failed){
-      try{ yt.unMute(); }catch(e){}
-      try{ yt.setVolume(100); }catch(e){}
-      try{ yt.playVideo(); }catch(e){}
-      setPlaying(true);
-    } else if(failed){
-      setPlaying(true); /* simulated fallback */
-    } else {
-      /* Player abhi ready nahi — command QUEUE karo, kho mat do */
-      setPlaying(true);
-    }
-    scheduleVerify();
-  }
-  function doPause(){
-    wantPlay = false;
-    if(verifyTimer){ clearTimeout(verifyTimer); verifyTimer = null; }
-    if(yt && ready){ try{ yt.pauseVideo(); }catch(e){} }
-    setPlaying(false);
-  }
-  /* Gaana khatam (poll safety-net ya player ka ENDED event): stop karo,
-     0:00 par wapas, Play icon dobara — auto-loop kabhi nahi. */
-  function segmentEnd(){
-    wantPlay = false;
-    if(verifyTimer){ clearTimeout(verifyTimer); verifyTimer = null; }
-    if(yt){ try{ yt.pauseVideo(); }catch(e){} try{ yt.seekTo(SEG_START, true); }catch(e){} }
-    simElapsed = 0; setPlaying(false); /* progress 0, play icon wapas */
-    notify();
-  }
-  function onEnded(){ segmentEnd(); }
-  /* ASLI visible player — Music app me rehta hai; hamesha DOM me hota hai
-     (window band hone par bhi, taaki state kabhi kho na jaye). */
-  function createPlayer(){
-    if(yt) return;
-    try{
-      yt = new YT.Player("ytPlayerSlot", {
-        width: "300", height: "170", videoId: VIDEO_ID,
-        playerVars: { enablejsapi: 1, playsinline: 1, rel: 0, modestbranding: 1, controls: 1 },
-        events: {
-          onReady: function(){
-            ready = true;
-            /* Pura gaana cue karo: 0:00 se aakhir tak (3:25) — koi
-               endSeconds cap NAHI. cueVideoById autoplay NAHI karta —
-               gaana sirf Play dabane par bajega. */
-            try{ yt.cueVideoById({ videoId: VIDEO_ID, startSeconds: SEG_START }); }catch(e){}
-            try{ yt.setVolume(100); }catch(e){}
-            if(wantPlay){ /* queued play command ab execute karo */
-              try{ yt.unMute(); }catch(e){}
-              try{ yt.setVolume(100); }catch(e){}
-              try{ yt.playVideo(); }catch(e){}
-              scheduleVerify();
-            }
-            runTimers(); notify();
-          },
-          onStateChange: function(e){
-            if(!window.YT) return;
-            if(e.data === YT.PlayerState.ENDED) onEnded();
-            else if(e.data === YT.PlayerState.PLAYING){ if(verifyTimer){ clearTimeout(verifyTimer); verifyTimer = null; } setPlaying(true); }
-            else if(e.data === YT.PlayerState.PAUSED){ if(!wantPlay) setPlaying(false); }
-          },
-          onError: function(ev){ fail("yt-error-" + (ev && ev.data)); }
-        }
-      });
-    }catch(err){ fail("player-construct"); }
-  }
-  /* Floating player box — iframe DOM me EK hi jagah rehta hai (DOM me
-     move karne se iframe reload ho jata hai), lekin CSS position se ye
-     widget ke mini video area ya Music app ke video area ke upar bilkul
-     chipka rehta hai (har animation frame sync). Isiliye player hamesha
-     ek ASLI, visible, full-size jagah par hota hai — purana 1px /
-     opacity-0 wala tareeka gaya, wahi silent failure ki jad thi. */
-  const floatBox = document.createElement("div");
-  floatBox.id = "ytFloat";
-  floatBox.style.cssText = "position:fixed; left:0; top:0; width:200px; height:112px; z-index:5; border-radius:10px; overflow:hidden; background:#000; visibility:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35)";
-  const slotEl = document.createElement("div"); slotEl.id = "ytPlayerSlot"; slotEl.style.cssText = "width:100%; height:100%";
-  floatBox.appendChild(slotEl);
-  document.body.appendChild(floatBox);
-  function visibleDock(){
-    const m = document.getElementById("ytDockMusic");
-    if(m && m.getClientRects().length) return { el: m, z: 4000 };
-    const mo = document.getElementById("ytDockMobile");
-    if(mo && mo.getClientRects().length) return { el: mo, z: 300 };
-    const w = document.getElementById("ytDockWidget");
-    if(w && w.getClientRects().length) return { el: w, z: 5 };
-    return null;
-  }
-  function syncDock(){
-    const d = visibleDock();
-    if(d){
-      const r = d.el.getBoundingClientRect();
-      floatBox.style.left = r.left + "px"; floatBox.style.top = r.top + "px";
-      floatBox.style.right = "auto"; floatBox.style.bottom = "auto";
-      floatBox.style.width = r.width + "px"; floatBox.style.height = r.height + "px";
-      floatBox.style.zIndex = d.z; floatBox.style.visibility = "visible";
-    } else if(playing || wantPlay){
-      /* Koi dock visible nahi (jaise mobile par Music window band) —
-         chhota floating mini-player, taaki bajta gaana dikhe bhi */
-      floatBox.style.left = "auto"; floatBox.style.top = "auto";
-      floatBox.style.right = "12px"; floatBox.style.bottom = "96px";
-      floatBox.style.width = "176px"; floatBox.style.height = "99px";
-      floatBox.style.zIndex = 4000; floatBox.style.visibility = "visible";
-    } else {
-      floatBox.style.visibility = "hidden";
-    }
-    requestAnimationFrame(syncDock);
-  }
-  requestAnimationFrame(syncDock);
-  window.onYouTubeIframeAPIReady = createPlayer;
-  const tag = document.createElement("script");
-  tag.src = "https://www.youtube.com/iframe_api";
-  tag.onerror = function(){ fail("api-script-load"); };
-  document.head.appendChild(tag);
-  /* API kabhi aaye hi na (offline/block) to silent mat raho */
-  setTimeout(()=>{ if(!ready && !failed && typeof window.YT === "undefined") fail("api-timeout-9s"); }, 9000);
+  function notify(){ listeners.forEach(listener => listener(state())); }
+  function play(){ audio.play().catch(() => toast("Tough preview could not play. Try again.")); }
+  for(const event of ["play","pause","ended","timeupdate","loadedmetadata"]) audio.addEventListener(event, notify);
   return {
-    toggle: function(){
-      if(wantPlay || playing) doPause(); else doPlay();
-    },
-    restart: function(){
-      simElapsed = 0;
-      if(yt && ready && !failed){ try{ yt.seekTo(0, true); }catch(e){} }
-      doPlay(); notify();
-    },
-    subscribe: function(fn){ subs.push(fn); try{ fn(state()); }catch(e){} }
+    toggle(){ if(audio.paused || audio.ended) play(); else audio.pause(); },
+    restart(){ audio.currentTime = 0; play(); },
+    subscribe(listener){ listeners.push(listener); listener(state()); }
   };
 })();
 
@@ -479,11 +268,10 @@ function initMusic(win){
   /* Sirf ek hi track hai — hidden gem. Baaki music kahin nahi dikhta.
      Playback asli hai — shared SongPlayer widget ke saath full sync. */
   play.addEventListener("click", ()=> SongPlayer.toggle());
-  const restart = ()=>{ SongPlayer.restart(); toast("♪ Rakhlo Tum Chupaake — yehi ek hidden gem hai 🔒"); };
+  const restart = ()=>{ SongPlayer.restart(); toast("♪ Tough — Krish Rao"); };
   const nx = $("#mNext", win), pv = $("#mPrev", win);
   if(nx) nx.addEventListener("click", restart);
   if(pv) pv.addEventListener("click", restart);
-  const ytLink = $("#mYtLink", win);
   const mEl = $("#mElapsed", win), mTt = $("#mTotal", win);
   SongPlayer.subscribe((s)=>{
     play.textContent = s.playing ? "⏸" : "▶";
@@ -492,7 +280,6 @@ function initMusic(win){
     if(prog) prog.style.width = (s.frac * 100).toFixed(1) + "%";
     if(mEl) mEl.textContent = fmtSongTime(s.elapsed);
     if(mTt) mTt.textContent = fmtSongTime(s.total);
-    if(ytLink) ytLink.style.display = s.failed ? "inline-block" : "none";
   });
   $$("#viz i", win).forEach((bar, i)=> bar.style.animationDelay = (i * 0.09) + "s");
 }
@@ -626,24 +413,19 @@ function initBM25(win){
 /* Now Playing widget */
 (function initNpWidget(){
   const w = $("#npWidget"); if(!w) return;
-  /* Front screen par sirf yehi ek gaana — Rakhlo Tum Chupaake, Arpit Bala.
-     Koi playlist nahi, baaki music hidden hai. Playback ASLI hai — shared
-     SongPlayer (YouTube IFrame API) se, Music app ke saath full sync. */
-  const btn = $("#npPlay"), prog = $("#npProg"), ytLink = $("#npYtLink");
+  const btn = $("#npPlay"), prog = $("#npProg");
   const npEl = $("#npElapsed"), npTt = $("#npTotal");
   $$(".np-eq i", w).forEach((bar, i)=> bar.style.animationDelay = (i * 0.08) + "s");
   btn.addEventListener("click", (e)=>{
     e.stopPropagation();
     SongPlayer.toggle();
   });
-  if(ytLink) ytLink.addEventListener("click", (e)=> e.stopPropagation());
   SongPlayer.subscribe((s)=>{
     btn.textContent = s.playing ? "⏸" : "▶";
     w.classList.toggle("playing", s.playing);
     prog.style.width = (s.frac * 100).toFixed(1) + "%";
     if(npEl) npEl.textContent = fmtSongTime(s.elapsed);
     if(npTt) npTt.textContent = fmtSongTime(s.total);
-    if(ytLink) ytLink.style.display = s.failed ? "inline-block" : "none";
   });
   w.addEventListener("click", ()=> openApp("music"));
 })();

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta name="keshavos-api" content="https://keshavos-backend-production.up.railway.app">
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light dark" />
@@ -83,18 +84,17 @@
       <div class="cal-mini" id="wCal"></div>
     </div>
     <div class="widget" id="npWidget">
-      <h4 style="color:#fc5c7d">Apple Music <span class="demo-badge">hidden gem 🔒</span> <span class="demo-badge">Full song • 3:25</span></h4>
+      <h4 style="color:#fc5c7d">Apple Music <span class="demo-badge">Apple Music preview</span></h4>
       <div class="np-row">
-        <span class="np-art"><img src="assets/image-a55600e2ec14.jpg" alt="Rakhlo Tum Chupaake — Arpit Bala, album art"></span>
-        <span class="np-meta"><b id="npTitle">Rakhlo Tum Chupaake</b><span id="npArtist">Arpit Bala</span></span>
+        <span class="np-art"><img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/10/0b/c2/100bc216-befc-12fc-c8e9-4540eb416b58/26UMGIM93276.rgb.jpg/100x100bb.jpg" alt="Tough — Krish Rao, album art"></span>
+        <span class="np-meta"><b id="npTitle">Tough</b><span id="npArtist">Krish Rao</span></span>
         <button class="np-btn" id="npPlay" aria-label="Play or pause widget music">▶</button>
       </div>
       <div class="np-video" id="ytDockWidget" aria-hidden="true"></div>
       <div class="np-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="np-prog"><i id="npProg"></i></div>
-      <div class="np-time" style="display:flex; justify-content:space-between; font-size:10.8px; opacity:.75; margin-top:5px; font-variant-numeric:tabular-nums"><span id="npElapsed">0:00</span><span id="npTotal">3:25</span></div>
+      <div class="np-time" style="display:flex; justify-content:space-between; font-size:10.8px; opacity:.75; margin-top:5px; font-variant-numeric:tabular-nums"><span id="npElapsed">0:00</span><span id="npTotal">0:00</span></div>
       <div style="font-size:10.8px; opacity:.6; margin-top:5px">Ek hi chhupa hua gaana — front screen par, sirf tumhare liye. 🔒</div>
-      <a id="npYtLink" class="np-yt" href="https://www.youtube.com/watch?v=slN2QlYr_-c" target="_blank" rel="noopener" style="display:none">YouTube par suno →</a>
     </div>
     <div class="widget" id="lpWidget">
       <h4 class="lp-h"><span class="live-badge">● LIVE</span> &nbsp;Live Project</h4>
@@ -188,17 +188,16 @@
             <div class="sub">New Delhi, India</div>
           </div>
           <div class="widget ios-widget" id="iosNp">
-            <h4 style="color:#fc5c7d">Apple Music <span class="demo-badge">hidden gem 🔒</span> <span class="demo-badge">Full song • 3:25</span></h4>
+            <h4 style="color:#fc5c7d">Apple Music <span class="demo-badge">Apple Music preview</span></h4>
             <div class="np-row">
-              <span class="np-art"><img src="assets/image-a55600e2ec14.jpg" alt="Rakhlo Tum Chupaake — Arpit Bala, album art"></span>
-              <span class="np-meta"><b>Rakhlo Tum Chupaake</b><span>Arpit Bala</span></span>
+              <span class="np-art"><img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/10/0b/c2/100bc216-befc-12fc-c8e9-4540eb416b58/26UMGIM93276.rgb.jpg/100x100bb.jpg" alt="Tough — Krish Rao, album art"></span>
+              <span class="np-meta"><b>Tough</b><span>Krish Rao</span></span>
               <button class="np-btn" id="iosNpPlay" aria-label="Play or pause">▶</button>
             </div>
             <div class="np-video" id="ytDockMobile"></div>
             <div class="np-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
             <div class="np-prog"><i id="iosNpProg"></i></div>
-            <div style="display:flex; justify-content:space-between; font-size:10.8px; opacity:.75; margin-top:5px; font-variant-numeric:tabular-nums"><span id="iosNpElapsed">0:00</span><span id="iosNpTotal">3:25</span></div>
-            <a id="iosNpYt" class="np-yt" href="https://www.youtube.com/watch?v=slN2QlYr_-c" target="_blank" rel="noopener" style="display:none">YouTube par suno →</a>
+            <div style="display:flex; justify-content:space-between; font-size:10.8px; opacity:.75; margin-top:5px; font-variant-numeric:tabular-nums"><span id="iosNpElapsed">0:00</span><span id="iosNpTotal">0:00</span></div>
           </div>
         </div>
         <div class="ios-grid" id="iosGrid1"></div>
@@ -532,18 +531,17 @@ Welcome to KeshavOS — type <b>help</b> to see commands.</div>
 
 <template id="tpl-music">
   <div class="music-body">
-    <div class="album album-video" id="ytDockMusic"></div>
-    <h3>Rakhlo Tum Chupaake</h3>
-    <p>Arpit Bala · hidden gem 🔒 <span class="demo-badge">Full song • 3:25</span></p>
+    <div class="album"><img width="100" height="100" src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/10/0b/c2/100bc216-befc-12fc-c8e9-4540eb416b58/26UMGIM93276.rgb.jpg/100x100bb.jpg" alt="Tough cover"></div>
+    <h3>Tough</h3>
+    <p>Krish Rao ·  <span class="demo-badge">Apple Music preview</span></p>
     <div class="viz" id="viz"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="progress"><i id="musicProg"></i></div>
-    <div style="display:flex; justify-content:space-between; font-size:11.5px; opacity:.75; margin:0 8px 14px; font-variant-numeric:tabular-nums"><span id="mElapsed">0:00</span><span id="mTotal">3:25</span></div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; opacity:.75; margin:0 8px 14px; font-variant-numeric:tabular-nums"><span id="mElapsed">0:00</span><span id="mTotal">0:00</span></div>
     <div class="music-ctl">
       <button id="mPrev" aria-label="Previous">⏮</button>
       <button class="play" id="mPlay" aria-label="Play or pause">▶</button>
       <button id="mNext" aria-label="Next">⏭</button>
     </div>
-    <a id="mYtLink" class="yt-link" href="https://www.youtube.com/watch?v=slN2QlYr_-c" target="_blank" rel="noopener" style="display:none">YouTube par suno →</a>
   </div>
 </template>
 

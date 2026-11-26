@@ -232,10 +232,8 @@
     var npProg = document.getElementById("iosNpProg");
     var npEl = document.getElementById("iosNpElapsed");
     var npTt = document.getElementById("iosNpTotal");
-    var npYt = document.getElementById("iosNpYt");
     $$(".np-eq i", npW).forEach(function(bar, i){ bar.style.animationDelay = (i * 0.08) + "s"; });
     npPlay.addEventListener("click", function(e){ e.stopPropagation(); SongPlayer.toggle(); });
-    if(npYt) npYt.addEventListener("click", function(e){ e.stopPropagation(); });
     npW.addEventListener("click", function(){ iosOpen("music"); });
     SongPlayer.subscribe(function(s){
       npPlay.textContent = s.playing ? "⏸" : "▶";
@@ -243,7 +241,6 @@
       if(npProg) npProg.style.width = (s.frac * 100).toFixed(1) + "%";
       if(npEl) npEl.textContent = fmtSongTime(s.elapsed);
       if(npTt) npTt.textContent = fmtSongTime(s.total);
-      if(npYt) npYt.style.display = s.failed ? "inline-block" : "none";
     });
   }
 })();
