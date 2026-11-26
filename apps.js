@@ -336,7 +336,7 @@ function applyAccent(color){
 /* Settings store — dockSize + reduceTransparency (localStorage me persist) */
 var SETTINGS_KEY = "keshavos-settings-v1";
 var settingsStore = { theme: "dark", dockSize: 50, reduceTransparency: false, wallpaper: "wp-streaks" };
-var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
+var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
 try{
   var savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
   if(savedSettings){
@@ -473,8 +473,7 @@ var wallpaperMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function syncWallpaperVideo(){
   const desktop = $("#desktop");
   const target = document.body.classList.contains("ios-mode") ? $("#ios") : desktop;
-  const slug = desktop.classList.contains("wp-goku") ? "goku"
-    : desktop.classList.contains("wp-vice-city") ? "vice-city" : "";
+  const slug = desktop.classList.contains("wp-goku") ? "goku" : "";
   if (!slug || matchMedia("(prefers-reduced-motion: reduce)").matches) {
     if (wallpaperVideo) {
       wallpaperVideo.pause();
@@ -510,7 +509,7 @@ function setWallpaper(cls, silent){
   syncWallpaperVideo();
   $$(".wp-thumb, .wp-card").forEach(t => t.classList.toggle("sel", t.dataset.wp === cls));
   if(typeof settingsStore !== "undefined"){ settingsStore.wallpaper = cls; saveSettings(); }
-  const names = { "wp-streaks":"Streaks (Default)", "wp-dusk":"Dusk", "wp-tide":"Tide", "wp-lagoon":"Lagoon", "wp-ember":"Ember", "wp-graphite":"Graphite", "wp-waves":"Sonoma Waves", "wp-crimson":"Crimson Streak", "wp-aurora":"Aurora", "wp-sunset":"Sunset Coast", "wp-green-hills":"Green Hills", "wp-goku":"Goku Ultra Instinct", "wp-vice-city":"Vice City", "wp-cosmic-peaks":"Cosmic Peaks", "wp-alpine-lake":"Alpine Lake", "wp-scenic-avif":"Scenic Photo" };
+  const names = { "wp-streaks":"Streaks (Default)", "wp-dusk":"Dusk", "wp-tide":"Tide", "wp-lagoon":"Lagoon", "wp-ember":"Ember", "wp-graphite":"Graphite", "wp-waves":"Sonoma Waves", "wp-crimson":"Crimson Streak", "wp-aurora":"Aurora", "wp-sunset":"Sunset Coast", "wp-green-hills":"Green Hills", "wp-goku":"Goku Ultra Instinct", "wp-cosmic-peaks":"Cosmic Peaks", "wp-alpine-lake":"Alpine Lake", "wp-scenic-avif":"Scenic Photo" };
   if(!silent) toast("Wallpaper: " + (names[cls] || cls));
 }
 document.addEventListener("click", (e)=>{
@@ -655,10 +654,19 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
   const cat = $("#wanderingCat");
   const bubble = $("#catBubble");
   let drag = null, hovered = false, bubbleTimer, resumeAt = 0;
+  let direction = 1, lastFrame = 0;
+  const scratch = document.createElement("div");
+  scratch.className = "cat-scratch";
+  scratch.setAttribute("aria-hidden", "true");
+  scratch.textContent = "🐾";
+  document.body.append(scratch);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 
   function pet(){
     clearTimeout(bubbleTimer);
+    cat.classList.remove("cat-grumpy");
+    scratch.classList.remove("show");
+    bubble.textContent = "Purr ♡";
     cat.classList.add("petted");
     bubble.classList.add("show");
     bubbleTimer = setTimeout(() => {
@@ -677,12 +685,16 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
     if(drag || event.button !== 0) return;
     const bounds = cat.getBoundingClientRect();
     drag = { id:event.pointerId, x:event.clientX, y:event.clientY,
-      offsetX:event.clientX - bounds.left, offsetY:event.clientY - bounds.top, moved:false };
+      offsetX:event.clientX - bounds.left, offsetY:event.clientY - bounds.top, moved:false, lastY:event.clientY, lastAt:performance.now(), speedY:0 };
     cat.setPointerCapture(event.pointerId);
   });
   cat.addEventListener("pointermove", event => {
     if(drag?.id !== event.pointerId) return;
     if(!drag.moved && Math.hypot(event.clientX-drag.x,event.clientY-drag.y) < 6) return;
+    const now = performance.now();
+    drag.speedY = (event.clientY - drag.lastY) / Math.max(8, now - drag.lastAt);
+    drag.lastY = event.clientY;
+    drag.lastAt = now;
     drag.moved = true;
     cat.classList.add("cat-dragging");
     cat.classList.remove("petted");
@@ -698,7 +710,28 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
   });
   function release(event){
     if(drag?.id !== event.pointerId) return;
-    if(drag.moved) resumeAt = Date.now() + 2400;
+    if(drag.moved){
+      hovered = event.pointerType !== "touch" && cat.matches(":hover");
+      resumeAt = Date.now() + 900;
+      const dock = document.querySelector(document.body.classList.contains("ios-mode") ? "#iosDock" : "#dock");
+      const high = dock && cat.getBoundingClientRect().bottom < dock.getBoundingClientRect().top - 100;
+      const flick = performance.now() - drag.lastAt < 110 && Math.abs(drag.speedY) > .75;
+      if(event.type === "pointerup" && (high || flick)){
+        resumeAt = Date.now() + 1300;
+        clearTimeout(bubbleTimer);
+        cat.classList.add("cat-grumpy");
+        bubble.textContent = "Hiss!";
+        bubble.classList.add("show");
+        scratch.classList.remove("show");
+        void scratch.offsetWidth;
+        scratch.classList.add("show");
+        bubbleTimer = setTimeout(() => {
+          cat.classList.remove("cat-grumpy");
+          bubble.classList.remove("show");
+          scratch.classList.remove("show");
+        }, 1250);
+      }
+    }
     else if(event.type === "pointerup") pet();
     drag = null;
     cat.classList.remove("cat-dragging");
@@ -710,11 +743,34 @@ console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — 
   cat.addEventListener("keydown", event => {
     if(event.key === "Enter" || event.key === " "){ event.preventDefault(); pet(); }
   });
-  setInterval(() => {
-    if(Date.now() < resumeAt || drag || hovered || cat.classList.contains("petted") || reduced.matches || document.hidden || !cat.offsetParent) return;
-    cat.style.setProperty("--cat-x", (3 + Math.random() * 91) + "%");
-    cat.style.setProperty("--cat-y", (9 + Math.random() * 75) + "%");
-  }, 4200);
+  function patrol(now){
+    requestAnimationFrame(patrol);
+    const elapsed = Math.min(35, now - lastFrame);
+    lastFrame = now;
+    const parent = cat.offsetParent;
+    if(!parent || reduced.matches || document.hidden || drag || hovered || Date.now() < resumeAt || cat.classList.contains("petted")) return;
+    const dock = document.querySelector(document.body.classList.contains("ios-mode") ? "#iosDock" : "#dock");
+    if(!dock) return;
+    const area = parent.getBoundingClientRect();
+    const lane = dock.getBoundingClientRect();
+    const start = Math.max(4, lane.left - area.left);
+    const end = Math.max(start, Math.min(area.width, lane.right - area.left) - cat.offsetWidth);
+    const targetY = Math.max(0, lane.top - area.top - cat.offsetHeight - 5);
+    let x = cat.offsetLeft, y = cat.offsetTop;
+    const step = elapsed * .19;
+    if(Math.abs(targetY - y) > step){
+      y += Math.sign(targetY - y) * step;
+    } else {
+      y = targetY;
+      if(x >= end) direction = -1;
+      else if(x <= start) direction = 1;
+      x += direction * step;
+    }
+    cat.style.setProperty("--cat-x", 100 * x / area.width + "%");
+    cat.style.setProperty("--cat-y", 100 * y / area.height + "%");
+    cat.classList.toggle("cat-left", direction < 0);
+  }
+  requestAnimationFrame(patrol);
 })();
 
 /* Desktop folders — drag karke kahin bhi rakho, jagah localStorage me save.

@@ -829,7 +829,6 @@ body.ios-mode .window .traffic .y, body.ios-mode .window .traffic .g{display:non
 
 :is(#desktop,#ios).wp-green-hills{background:#283b1d url("assets/green-hills.jpg") center/cover no-repeat}
 :is(#desktop,#ios).wp-goku{background:#10111a url("assets/goku.jpg") center/cover no-repeat}
-:is(#desktop,#ios).wp-vice-city{background:#26182c url("assets/vice-city.jpg") center/cover no-repeat}
 :is(#desktop,#ios):has(.wallpaper-video){isolation:isolate}
 .wallpaper-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:-1}
 
@@ -871,3 +870,11 @@ html[data-theme="dark"] .titlebar{background:#101012;border-bottom-color:var(--w
 html[data-theme="dark"] :is(.sidebar,.set-side,.notes-list){background:#0e0e11}
 html[data-theme="dark"] :is(.set-card,.pcard,.proj,.stat-box,.feat,.gb-form,.gb-entry,.labs-card,.ct-profile){background:#131316}
 html[data-theme="dark"] :is(#desktop,#ios).wp-streaks{background:#000}
+
+#wanderingCat{transition:none}
+.cat-left .cat-sprite{scale:-1 1}
+.cat-grumpy .cat-sprite{animation:cat-nuzzle .17s ease-in-out alternate 4}
+.cat-scratch{display:none;position:fixed;inset:0;z-index:99999;pointer-events:none;place-items:center;font-size:clamp(50px,15vw,140px);color:#ffdbc4;text-shadow:0 3px 22px #431b16}
+.cat-scratch.show{display:grid;animation:cat-swipe 1.2s ease-out both}
+@keyframes cat-swipe{0%{opacity:0;transform:translate(-12%,-9%) rotate(-20deg)}20%{opacity:1}65%{opacity:.8;transform:translate(12%,8%) rotate(15deg)}100%{opacity:0;transform:translate(17%,11%) rotate(20deg)}}
+@media(prefers-reduced-motion:reduce){.cat-scratch.show,.cat-grumpy .cat-sprite{animation:none}}

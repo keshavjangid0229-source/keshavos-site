@@ -146,7 +146,7 @@
 
   /* Wallpaper — desktop ki wp-* classes #ios par mirror karo */
   var desk = document.getElementById("desktop");
-  var WP_CLASSES = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
+  var WP_CLASSES = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
   function syncWp(){
     WP_CLASSES.forEach(function(c){ iosEl.classList.toggle(c, desk.classList.contains(c)); });
   }
