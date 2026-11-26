@@ -2589,7 +2589,15 @@ sleepOverlay.style.cssText = "position:fixed;inset:0;background:#000;z-index:950
 sleepOverlay.textContent = "Click anywhere to wake";
 sleepOverlay.addEventListener("click", ()=> sleepOverlay.style.display = "none");
 document.body.appendChild(sleepOverlay);
-function doSleep(){ closeDropdown(); sleepOverlay.style.display = "grid"; }
+function showScreenOverlay(label, size, color){
+  closeDropdown();
+  sleepOverlay.textContent = label;
+  sleepOverlay.style.fontSize = size;
+  sleepOverlay.style.color = color;
+  sleepOverlay.style.display = "grid";
+}
+function doSleep(){ showScreenOverlay("Click anywhere to wake", "14px", "rgba(255,255,255,.4)"); }
+function doLock(){ showScreenOverlay("K", "76px", "#f5f5f7"); }
 function doRestart(){
   closeDropdown();
   Object.keys(wins).slice().forEach(closeWin);
@@ -2607,7 +2615,7 @@ const MENUS = {
     ["Restart…", doRestart],
     ["Shut Down…", doSleep],
     null,
-    ["Lock Screen", doSleep],
+    ["Lock Screen", doLock],
   ],
   file: [ ["New Finder Window", ()=> openApp("about")], ["New Folder", ()=> toast("Desktop par folder ban gaya hota — par ye portfolio hai, sab apps me hai")], null, ["Close Window", ()=>{ if(focusedId) closeWin(focusedId); }] ],
   edit: [ ["Undo", ()=> toast("Undo — par galti hui hi nahi 😉")], ["Copy", ()=> toast("Copied! (mann me)")], ["Paste", ()=> toast("Paste karne ke liye pehle kuch copy karo")] ],
