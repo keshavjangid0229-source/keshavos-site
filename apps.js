@@ -880,6 +880,6 @@ buildCalGrid($("#wCal"), true);
 window.addEventListener("load", ()=>{
   setTimeout(()=>{
     $("#boot").classList.add("done");
-    setTimeout(()=>{ if(!(window.IOSMode && IOSMode.active)) openApp("about"); }, 550);
+    setTimeout(()=>{ if(!(window.IOSMode && IOSMode.active) && !Object.keys(wins).length && !$("#spotlight").classList.contains("show")) openApp("about"); }, 550);
   }, 1650);
 });
