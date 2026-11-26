@@ -84,17 +84,17 @@
       <div class="cal-mini" id="wCal"></div>
     </div>
     <div class="widget" id="npWidget">
-      <h4 style="color:#fc5c7d">Apple Music <span class="demo-badge">Full track</span></h4>
       <div class="np-row">
         <span class="np-art"><img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/10/0b/c2/100bc216-befc-12fc-c8e9-4540eb416b58/26UMGIM93276.rgb.jpg/100x100bb.jpg" alt="Tough — Krish Rao, album art"></span>
-        <span class="np-meta"><b id="npTitle">Tough</b><span id="npArtist">Krish Rao</span></span>
-        <button class="np-btn" id="npPlay" aria-label="Play or pause widget music">▶</button>
+        <span class="np-meta"><small>Now Playing</small><b>Tough</b><span>Krish Rao</span></span>
+        <span class="np-note" aria-hidden="true">♫</span>
       </div>
-      <div class="np-video" id="ytDockWidget" aria-hidden="true"></div>
-      <div class="np-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <input class="song-seek" id="npProg" type="range" min="0" max="0" value="0" step="0.1" aria-label="Seek in Tough" disabled>
-      <div class="np-time" style="display:flex; justify-content:space-between; font-size:10.8px; opacity:.75; margin-top:5px; font-variant-numeric:tabular-nums"><span id="npElapsed">0:00</span><span id="npTotal">0:00</span></div>
-      <div style="font-size:10.8px; opacity:.6; margin-top:5px">Ek hi chhupa hua gaana — front screen par, sirf tumhare liye. 🔒</div>
+      <div class="np-controls">
+        <button class="np-btn" id="npPlay" aria-label="Play or pause Tough">▶</button>
+        <span id="npElapsed">0:00</span>
+        <input class="song-seek" id="npProg" type="range" min="0" max="0" value="0" step="0.1" aria-label="Seek in Tough" disabled>
+        <span id="npTotal">0:00</span>
+      </div>
     </div>
     <div class="widget" id="lpWidget">
       <h4 class="lp-h"><span class="live-badge">● LIVE</span> &nbsp;Live Project</h4>
@@ -188,16 +188,17 @@
             <div class="sub">New Delhi, India</div>
           </div>
           <div class="widget ios-widget" id="iosNp">
-            <h4 style="color:#fc5c7d">Apple Music <span class="demo-badge">Full track</span></h4>
-            <div class="np-row">
-              <span class="np-art"><img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/10/0b/c2/100bc216-befc-12fc-c8e9-4540eb416b58/26UMGIM93276.rgb.jpg/100x100bb.jpg" alt="Tough — Krish Rao, album art"></span>
-              <span class="np-meta"><b>Tough</b><span>Krish Rao</span></span>
-              <button class="np-btn" id="iosNpPlay" aria-label="Play or pause">▶</button>
-            </div>
-            <div class="np-video" id="ytDockMobile"></div>
-            <div class="np-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <input class="song-seek" id="iosNpProg" type="range" min="0" max="0" value="0" step="0.1" aria-label="Seek in Tough" disabled>
-            <div style="display:flex; justify-content:space-between; font-size:10.8px; opacity:.75; margin-top:5px; font-variant-numeric:tabular-nums"><span id="iosNpElapsed">0:00</span><span id="iosNpTotal">0:00</span></div>
+      <div class="np-row">
+        <span class="np-art"><img src="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/10/0b/c2/100bc216-befc-12fc-c8e9-4540eb416b58/26UMGIM93276.rgb.jpg/100x100bb.jpg" alt="Tough — Krish Rao, album art"></span>
+        <span class="np-meta"><small>Now Playing</small><b>Tough</b><span>Krish Rao</span></span>
+        <span class="np-note" aria-hidden="true">♫</span>
+      </div>
+      <div class="np-controls">
+        <button class="np-btn" id="iosNpPlay" aria-label="Play or pause Tough">▶</button>
+        <span id="iosNpElapsed">0:00</span>
+        <input class="song-seek" id="iosNpProg" type="range" min="0" max="0" value="0" step="0.1" aria-label="Seek in Tough" disabled>
+        <span id="iosNpTotal">0:00</span>
+      </div>
           </div>
         </div>
         <div class="ios-grid" id="iosGrid1"></div>
@@ -461,6 +462,9 @@ Welcome to KeshavOS — type <b>help</b> to see commands.</div>
           <button class="photo" data-wp="wp-green-hills"><img src="assets/green-hills.jpg" alt="" /><span>Green Hills</span></button>
           <button class="photo" data-wp="wp-goku"><img src="assets/goku.jpg" alt="" /><span>Goku Ultra Instinct · Live</span></button>
           <button class="photo" data-wp="wp-vice-city"><img src="assets/vice-city.jpg" alt="" /><span>Vice City · Live</span></button>
+          <button class="photo" data-wp="wp-cosmic-peaks"><img src="assets/cosmic-peaks.jpg" alt="" loading="lazy"><span>Cosmic Peaks</span></button>
+          <button class="photo" data-wp="wp-alpine-lake"><img src="assets/alpine-lake.jpg" alt="" loading="lazy"><span>Alpine Lake</span></button>
+          <button class="photo" data-wp="wp-scenic-avif"><img src="assets/scenic-avif.avif" alt="" loading="lazy"><span>Scenic Photo</span></button>
     </div>
   </div>
 </template>
@@ -501,6 +505,9 @@ Welcome to KeshavOS — type <b>help</b> to see commands.</div>
           <button class="wp-card" data-wp="wp-green-hills"><span class="wp-sw" style="display:block;background:url(assets/green-hills.jpg) center/cover no-repeat"></span><span>Green Hills</span></button>
           <button class="wp-card" data-wp="wp-goku"><span class="wp-sw" style="display:block;background:url(assets/goku.jpg) center/cover no-repeat"></span><span>Goku Ultra Instinct · Live</span></button>
           <button class="wp-card" data-wp="wp-vice-city"><span class="wp-sw" style="display:block;background:url(assets/vice-city.jpg) center/cover no-repeat"></span><span>Vice City · Live</span></button>
+          <button class="wp-card" data-wp="wp-cosmic-peaks"><span class="wp-sw" style="display:block;background:url(assets/cosmic-peaks.jpg) center/cover no-repeat"></span><span>Cosmic Peaks</span></button>
+          <button class="wp-card" data-wp="wp-alpine-lake"><span class="wp-sw" style="display:block;background:url(assets/alpine-lake.jpg) center/cover no-repeat"></span><span>Alpine Lake</span></button>
+          <button class="wp-card" data-wp="wp-scenic-avif"><span class="wp-sw" style="display:block;background:url(assets/scenic-avif.avif) center/cover no-repeat"></span><span>Scenic Photo</span></button>
         </div>
       </div>
       <div class="set-pane" data-set-pane="dock">

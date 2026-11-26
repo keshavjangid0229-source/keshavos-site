@@ -173,7 +173,7 @@
 
   /* Wallpaper — desktop ki wp-* classes #ios par mirror karo */
   var desk = document.getElementById("desktop");
-  var WP_CLASSES = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city"];
+  var WP_CLASSES = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
   function syncWp(){
     WP_CLASSES.forEach(function(c){ iosEl.classList.toggle(c, desk.classList.contains(c)); });
   }
@@ -233,7 +233,6 @@
     bindSongSeek(document.getElementById("iosNpProg"));
     var npEl = document.getElementById("iosNpElapsed");
     var npTt = document.getElementById("iosNpTotal");
-    $$(".np-eq i", npW).forEach(function(bar, i){ bar.style.animationDelay = (i * 0.08) + "s"; });
     npPlay.addEventListener("click", function(e){ e.stopPropagation(); SongPlayer.toggle(); });
     npW.addEventListener("click", function(){ iosOpen("music"); });
     SongPlayer.subscribe(function(s){

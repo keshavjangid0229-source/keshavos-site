@@ -832,3 +832,17 @@ body.ios-mode .window .traffic .y, body.ios-mode .window .traffic .g{display:non
 :is(#desktop,#ios).wp-vice-city{background:#26182c url("assets/vice-city.jpg") center/cover no-repeat}
 :is(#desktop,#ios):has(.wallpaper-video){isolation:isolate}
 .wallpaper-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:-1}
+
+:is(#desktop,#ios).wp-cosmic-peaks{background:#223346 url("assets/cosmic-peaks.jpg") center/cover no-repeat}
+:is(#desktop,#ios).wp-alpine-lake{background:#223346 url("assets/alpine-lake.jpg") center/cover no-repeat}
+:is(#desktop,#ios).wp-scenic-avif{background:#223346 url("assets/scenic-avif.avif") center/cover no-repeat}
+.widget:is(#npWidget,#iosNp){padding:14px;border-radius:24px;background:linear-gradient(125deg,#be5369e6,#803b51ec 50%,#37303ef0);border:1px solid #fff4;box-shadow:0 12px 26px #08091e55,inset 0 1px #fff2;color:#fff;backdrop-filter:blur(24px)}
+:is(#npWidget,#iosNp) .np-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+:is(#npWidget,#iosNp) .np-art{width:clamp(54px,6vw,84px);height:auto;aspect-ratio:1;border-radius:14px;box-shadow:0 5px 14px #190a2555}
+:is(#npWidget,#iosNp) .np-meta small{display:block;font-size:11px;font-weight:650;color:#ffe1e6}
+:is(#npWidget,#iosNp) .np-meta b{font-size:22px;line-height:1.2}
+:is(#npWidget,#iosNp) .np-meta span{color:#f7dfe5}
+.np-note{align-self:start;font-size:19px;color:#ffe2e7}
+.np-controls{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:8px;margin-top:12px;font-size:11px;font-variant-numeric:tabular-nums}
+.np-controls .song-seek{margin:0;min-width:0;accent-color:#ffe0e6}
+.np-controls .np-btn{background:#fff4f6;color:#821932}
