@@ -242,7 +242,7 @@ function buildCalGrid(el, mini){
 
 /* One native audio element keeps the desktop, mobile and Music controls in sync. */
 const SongPlayer = (function(){
-  const audio = new Audio("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e8/11/c8/e811c82c-e80b-b0b4-7e86-6ced99844767/mzaf_3066499147965018967.plus.aac.p.m4a");
+  const audio = new Audio("assets/tough.mp3");
   audio.preload = "metadata";
   const listeners = [];
   function state(){
@@ -251,7 +251,7 @@ const SongPlayer = (function(){
       frac: total ? audio.currentTime / total : 0 };
   }
   function notify(){ listeners.forEach(listener => listener(state())); }
-  function play(){ audio.play().catch(() => toast("Tough preview could not play. Try again.")); }
+  function play(){ audio.play().catch(() => toast("Tough could not play. Try again.")); }
   for(const event of ["play","pause","ended","timeupdate","loadedmetadata"]) audio.addEventListener(event, notify);
   return {
     toggle(){ if(audio.paused || audio.ended) play(); else audio.pause(); },

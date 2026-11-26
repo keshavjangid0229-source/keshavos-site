@@ -1,6 +1,6 @@
 # KeshavOS
 
-Keshav Jangid's portfolio presented as an interactive desktop. Explore projects through app windows, use Spotlight to jump between sections, play the featured track preview, or leave a Guestbook note.
+Keshav Jangid's portfolio presented as an interactive desktop. Explore projects through app windows, use Spotlight to jump between sections, play the featured track, or leave a Guestbook note.
 
 [Open KeshavOS](https://keshavos-site.vercel.app/) · [Read the plain portfolio](https://keshavos-site.vercel.app/about.html)
 
