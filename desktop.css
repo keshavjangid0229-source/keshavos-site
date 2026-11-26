@@ -834,7 +834,6 @@ body.ios-mode .window .traffic .y, body.ios-mode .window .traffic .g{display:non
 
 :is(#desktop,#ios).wp-cosmic-peaks{background:#223346 url("assets/cosmic-peaks.jpg") center/cover no-repeat}
 :is(#desktop,#ios).wp-alpine-lake{background:#223346 url("assets/alpine-lake.jpg") center/cover no-repeat}
-:is(#desktop,#ios).wp-scenic-avif{background:#223346 url("assets/scenic-avif.avif") center/cover no-repeat}
 .widget:is(#npWidget,#iosNp){padding:14px;border-radius:24px;background:linear-gradient(125deg,#be5369e6,#803b51ec 50%,#37303ef0);border:1px solid #fff4;box-shadow:0 12px 26px #08091e55,inset 0 1px #fff2;color:#fff;backdrop-filter:blur(24px)}
 :is(#npWidget,#iosNp) .np-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
 :is(#npWidget,#iosNp) .np-art{width:clamp(54px,6vw,84px);height:auto;aspect-ratio:1;border-radius:14px;box-shadow:0 5px 14px #190a2555}

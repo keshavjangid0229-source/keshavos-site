@@ -336,7 +336,7 @@ function applyAccent(color){
 /* Settings store — dockSize + reduceTransparency (localStorage me persist) */
 var SETTINGS_KEY = "keshavos-settings-v1";
 var settingsStore = { theme: "dark", dockSize: 50, reduceTransparency: false, wallpaper: "wp-streaks" };
-var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-cosmic-peaks","wp-alpine-lake","wp-scenic-avif"];
+var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-cosmic-peaks","wp-alpine-lake"];
 try{
   var savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
   if(savedSettings){
@@ -509,7 +509,7 @@ function setWallpaper(cls, silent){
   syncWallpaperVideo();
   $$(".wp-thumb, .wp-card").forEach(t => t.classList.toggle("sel", t.dataset.wp === cls));
   if(typeof settingsStore !== "undefined"){ settingsStore.wallpaper = cls; saveSettings(); }
-  const names = { "wp-streaks":"Streaks (Default)", "wp-dusk":"Dusk", "wp-tide":"Tide", "wp-lagoon":"Lagoon", "wp-ember":"Ember", "wp-graphite":"Graphite", "wp-waves":"Sonoma Waves", "wp-crimson":"Crimson Streak", "wp-aurora":"Aurora", "wp-sunset":"Sunset Coast", "wp-green-hills":"Green Hills", "wp-goku":"Goku Ultra Instinct", "wp-cosmic-peaks":"Cosmic Peaks", "wp-alpine-lake":"Alpine Lake", "wp-scenic-avif":"Scenic Photo" };
+  const names = { "wp-streaks":"Streaks (Default)", "wp-dusk":"Dusk", "wp-tide":"Tide", "wp-lagoon":"Lagoon", "wp-ember":"Ember", "wp-graphite":"Graphite", "wp-waves":"Sonoma Waves", "wp-crimson":"Crimson Streak", "wp-aurora":"Aurora", "wp-sunset":"Sunset Coast", "wp-green-hills":"Green Hills", "wp-goku":"Goku Ultra Instinct", "wp-cosmic-peaks":"Cosmic Peaks", "wp-alpine-lake":"Alpine Lake" };
   if(!silent) toast("Wallpaper: " + (names[cls] || cls));
 }
 document.addEventListener("click", (e)=>{
