@@ -647,30 +647,70 @@ console.log("%c👋 Namaste, fellow developer! KeshavOS ke console me tumhara sw
 console.log("%cYe desktop ek portfolio hai jo pura browser me chalta hai — windows, dock, terminal, sab haath se bana hai. Code dekhna hai to GitHub par milo: github.com/keshavjangid0229-source", "font-size:12px; color:#888");
 console.log("%c🐈 Ek hint: desktop par ek billi chhupi hui ghoom rahi hai — aur Terminal me 'neofetch' ya 'sudo hire-me' likhne par kuch khaas hota hai. Khud dhoondho!", "font-size:12px; color:#e07b00");
 
-/* Wandering cat — har kuch seconds me nayi jagah; click par meow + hop + dash */
+/* Desktop cat. A placed cat stays put until the page is refreshed. */
 (function initCat(){
-  const cat = document.getElementById("wanderingCat"); if(!cat) return;
-  const bubble = document.getElementById("catBubble");
-  let lastX = 58, bubbleTimer = null, hopTimer = null, dashTimer = null;
-  function moveTo(fast){
-    const nx = 4 + Math.random() * 82, ny = 14 + Math.random() * 62;
-    if(fast) cat.classList.add("dashing");
-    cat.style.transform = nx < lastX ? "scaleX(-1)" : "scaleX(1)";
-    cat.style.left = nx + "%"; cat.style.top = ny + "%";
-    lastX = nx;
-    if(fast){ clearTimeout(dashTimer); dashTimer = setTimeout(()=> cat.classList.remove("dashing"), 650); }
+  const cat = $("#wanderingCat");
+  const bubble = $("#catBubble");
+  let drag = null, placed = false, hovered = false, bubbleTimer;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+
+  function pet(){
+    clearTimeout(bubbleTimer);
+    cat.classList.add("petted");
+    bubble.classList.add("show");
+    bubbleTimer = setTimeout(() => {
+      cat.classList.remove("petted");
+      bubble.classList.remove("show");
+    }, 1600);
   }
-  function wander(){ moveTo(false); }
-  function meow(){
-    if(bubble){ bubble.classList.add("show"); clearTimeout(bubbleTimer); bubbleTimer = setTimeout(()=> bubble.classList.remove("show"), 1900); }
-    cat.classList.remove("hopping"); void cat.offsetWidth; cat.classList.add("hopping");
-    clearTimeout(hopTimer); hopTimer = setTimeout(()=> cat.classList.remove("hopping"), 600);
-    setTimeout(()=> moveTo(true), 240);
+
+  cat.addEventListener("pointerenter", event => {
+    if(event.pointerType === "touch" || drag) return;
+    hovered = true;
+    pet();
+  });
+  cat.addEventListener("pointerleave", () => { hovered = false; });
+  cat.addEventListener("pointerdown", event => {
+    if(drag || event.button !== 0) return;
+    const bounds = cat.getBoundingClientRect();
+    drag = { id:event.pointerId, x:event.clientX, y:event.clientY,
+      offsetX:event.clientX - bounds.left, offsetY:event.clientY - bounds.top, moved:false };
+    cat.setPointerCapture(event.pointerId);
+  });
+  cat.addEventListener("pointermove", event => {
+    if(drag?.id !== event.pointerId) return;
+    if(!drag.moved && Math.hypot(event.clientX-drag.x,event.clientY-drag.y) < 6) return;
+    drag.moved = placed = true;
+    cat.classList.add("cat-dragging");
+    cat.classList.remove("petted");
+    bubble.classList.remove("show");
+    const parent = cat.offsetParent;
+    if(!parent) return;
+    const bounds = parent.getBoundingClientRect();
+    function position(value, limit, size){
+      return 100 * Math.max(0, Math.min(value, limit)) / Math.max(1,size);
+    }
+    cat.style.setProperty("--cat-x", position(event.clientX - bounds.left - drag.offsetX, parent.clientWidth - cat.offsetWidth, parent.clientWidth) + "%");
+    cat.style.setProperty("--cat-y", position(event.clientY - bounds.top - drag.offsetY, parent.clientHeight - cat.offsetHeight, parent.clientHeight) + "%");
+  });
+  function release(event){
+    if(drag?.id !== event.pointerId) return;
+    if(!drag.moved && event.type === "pointerup") pet();
+    drag = null;
+    cat.classList.remove("cat-dragging");
   }
-  cat.addEventListener("click", (e)=>{ e.stopPropagation(); meow(); });
-  cat.addEventListener("keydown", (e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); meow(); } });
-  setInterval(wander, 4200);
-  setTimeout(wander, 1600);
+  cat.addEventListener("pointerup", release);
+  cat.addEventListener("pointercancel", release);
+  cat.addEventListener("lostpointercapture", release);
+  cat.addEventListener("click", event => { event.stopPropagation(); if(event.detail === 0) pet(); });
+  cat.addEventListener("keydown", event => {
+    if(event.key === "Enter" || event.key === " "){ event.preventDefault(); pet(); }
+  });
+  setInterval(() => {
+    if(placed || drag || hovered || cat.classList.contains("petted") || reduced.matches || document.hidden) return;
+    cat.style.setProperty("--cat-x", (6 + Math.random() * 76) + "%");
+    cat.style.setProperty("--cat-y", (14 + Math.random() * 62) + "%");
+  }, 4200);
 })();
 
 /* Desktop folders — drag karke kahin bhi rakho, jagah localStorage me save.
