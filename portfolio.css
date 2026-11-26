@@ -1,0 +1,20 @@
+body.plain-portfolio { margin:0; background:#101825; color:#ebf2fa; font:1rem/1.6 system-ui,sans-serif; }
+.plain-portfolio main { width:min(44rem,calc(100% - 2rem)); margin:3rem auto; }
+.plain-portfolio h1 { font-size:clamp(2rem,6vw,3.5rem); line-height:1.12; margin-bottom:.5rem; }
+.plain-portfolio nav { display:flex; flex-wrap:wrap; gap:1rem; }
+.plain-portfolio a { color:#a9d6ff; }
+.plain-portfolio article { border:1px solid #465366; border-radius:.8rem; padding:.6rem 1rem; margin:.8rem 0; }
+.plain-portfolio article a + a { margin-left:1rem; }
+.portfolio-panel { padding:clamp(1rem,4vw,2rem); color:var(--win-ink); }
+.portfolio-panel > :first-child { margin-top:0; }
+.portfolio-panel h2 { font-size:1.55rem; margin-bottom:.4rem; }
+.portfolio-panel h3 { margin-top:1.2rem; }
+.portfolio-panel p { line-height:1.6; }
+.portfolio-panel a { color:inherit; text-decoration:underline; }
+.portfolio-panel form { display:flex; flex-wrap:wrap; align-items:end; gap:.55rem; }
+.portfolio-panel label { display:grid; flex:1; min-width:min(13rem,100%); gap:.35rem; }
+.portfolio-panel input { border:1px solid currentColor; border-radius:.45rem; padding:.65rem; background:var(--win-bg2); color:inherit; font:inherit; }
+.portfolio-panel button, .portfolio-quick button { background:#315893; border:0; border-radius:.45rem; color:white; padding:.58rem .8rem; font:inherit; cursor:pointer; }
+.portfolio-quick { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin:.8rem 0; }
+.portfolio-quick a { color:inherit; text-decoration:underline; }
+.proj .p-actions button { white-space:normal; }
