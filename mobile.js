@@ -55,61 +55,34 @@
   PAGE2.forEach(function(p){ var b = iconBtn(p[0], p[1]); if(b) grid2.appendChild(b); });
   DOCK.forEach(function(id){ var b = iconBtn(id, APPS[id].name); if(b) dockEl.appendChild(b); });
 
-  /* Home screen pager — 2 pages, swipe ya dots se slide. Sirf transform
-     badalta hai: DOM kabhi rearrange nahi hota, isliye Now Playing widget
-     ka shared YouTube iframe page switch par reload nahi hota.          */
+  /* Native horizontal scrolling keeps touch swipes and vertical page scrolling independent. */
   var pager = document.getElementById("iosPager");
-  var pagesEl = document.getElementById("iosPages");
-  var dotEls = Array.prototype.slice.call(document.querySelectorAll(".ios-dot"));
-  var curPage = 0, drag = null, suppressClick = false;
-  function goPage(i){
+  var dotEls = Array.from(document.querySelectorAll(".ios-dot"));
+  var curPage = 0;
+  function showPage(i){
     curPage = Math.max(0, Math.min(dotEls.length - 1, i));
-    pagesEl.style.transform = "translateX(" + (-curPage * pager.clientWidth) + "px)";
-    dotEls.forEach(function(d, k){ d.classList.toggle("on", k === curPage); });
+    dotEls.forEach(function(dot, index){
+      dot.classList.toggle("on", index === curPage);
+      if(index === curPage) dot.setAttribute("aria-current", "page");
+      else dot.removeAttribute("aria-current");
+    });
     iosEl.classList.toggle("pg2", curPage === 1);
   }
-  dotEls.forEach(function(d){
-    d.addEventListener("click", function(){ goPage(parseInt(d.getAttribute("data-page"), 10) || 0); });
-  });
-  pager.addEventListener("click", function(e){
-    if(suppressClick){ e.stopPropagation(); e.preventDefault(); suppressClick = false; }
-  }, true);
-  pager.addEventListener("pointerdown", function(e){
-    drag = { x: e.clientX, y: e.clientY, decided: false };
-  });
-  pager.addEventListener("pointermove", function(e){
-    if(!drag) return;
-    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if(!drag.decided){
-      if(Math.abs(dy) > Math.abs(dx) + 4){ drag = null; return; }
-      if(Math.abs(dx) > 6) drag.decided = true;
-      else return;
-    }
-    pagesEl.classList.add("dragging");
-    pagesEl.style.transform = "translateX(" + (-curPage * pager.clientWidth + dx) + "px)";
-  });
-  function endDrag(e){
-    if(!drag) return;
-    var dx = e.clientX - drag.x, wasDrag = drag.decided;
-    drag = null;
-    pagesEl.classList.remove("dragging");
-    if(wasDrag){
-      suppressClick = true;
-      if(dx <= -48) goPage(curPage + 1);
-      else if(dx >= 48) goPage(curPage - 1);
-      else goPage(curPage);
-    }
+  function goPage(i, behavior){
+    pager.scrollTo({ left:i * pager.clientWidth, behavior:behavior });
   }
-  pager.addEventListener("pointerup", endDrag);
-  pager.addEventListener("pointercancel", function(){
-    if(!drag) return;
-    drag = null;
-    pagesEl.classList.remove("dragging");
-    goPage(curPage);
+  pager.addEventListener("scroll", function(){
+    if(pager.clientWidth) showPage(Math.round(pager.scrollLeft / pager.clientWidth));
+  }, { passive:true });
+  dotEls.forEach(function(dot, i){
+    dot.addEventListener("click", function(){
+      goPage(i, matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+    });
   });
   window.addEventListener("resize", function(){
-    if(document.body.classList.contains("ios-mode")) goPage(curPage);
+    if(document.body.classList.contains("ios-mode")) goPage(curPage, "auto");
   });
+  showPage(0);
 
   function fullscreenWin(id, win){
     if(win.dataset.deskCss === undefined){
