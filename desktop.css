@@ -826,3 +826,9 @@ body.ios-mode .window .traffic .y, body.ios-mode .window .traffic .g{display:non
 
 .song-seek { display:block; width:100%; cursor:pointer; accent-color:#fc5c7d; }
 .song-seek:disabled { cursor:default; }
+
+:is(#desktop,#ios).wp-green-hills{background:#283b1d url("assets/green-hills.jpg") center/cover no-repeat}
+:is(#desktop,#ios).wp-goku{background:#10111a url("assets/goku.jpg") center/cover no-repeat}
+:is(#desktop,#ios).wp-vice-city{background:#26182c url("assets/vice-city.jpg") center/cover no-repeat}
+:is(#desktop,#ios):has(.wallpaper-video){isolation:isolate}
+.wallpaper-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:-1}

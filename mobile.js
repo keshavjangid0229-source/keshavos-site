@@ -173,7 +173,7 @@
 
   /* Wallpaper — desktop ki wp-* classes #ios par mirror karo */
   var desk = document.getElementById("desktop");
-  var WP_CLASSES = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset"];
+  var WP_CLASSES = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city"];
   function syncWp(){
     WP_CLASSES.forEach(function(c){ iosEl.classList.toggle(c, desk.classList.contains(c)); });
   }
@@ -182,6 +182,7 @@
 
   function applyMode(on){
     document.body.classList.toggle("ios-mode", on);
+    syncWallpaperVideo();
     window.IOSMode.active = on;
     iosEl.setAttribute("aria-hidden", on ? "false" : "true");
     if(on){

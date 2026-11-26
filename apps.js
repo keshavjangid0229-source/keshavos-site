@@ -318,7 +318,7 @@ function applyAccent(color){
 /* Settings store — dockSize + reduceTransparency (localStorage me persist) */
 var SETTINGS_KEY = "keshavos-settings-v1";
 var settingsStore = { dockSize: 50, reduceTransparency: false, wallpaper: "wp-streaks" };
-var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset"];
+var WP_ALL = ["wp-streaks","wp-dusk","wp-tide","wp-lagoon","wp-ember","wp-graphite","wp-waves","wp-crimson","wp-aurora","wp-sunset","wp-green-hills","wp-goku","wp-vice-city"];
 try{
   var savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
   if(savedSettings){
@@ -449,14 +449,50 @@ function initBM25(win){
 })();
 $("#lpOpen").addEventListener("click", ()=> openApp("projects"));
 
-/* Wallpaper */
+/* Keep one background video active across desktop and mobile layouts. */
+var wallpaperVideo;
+var wallpaperMotion = matchMedia("(prefers-reduced-motion: reduce)");
+function syncWallpaperVideo(){
+  const desktop = $("#desktop");
+  const target = document.body.classList.contains("ios-mode") ? $("#ios") : desktop;
+  const slug = desktop.classList.contains("wp-goku") ? "goku"
+    : desktop.classList.contains("wp-vice-city") ? "vice-city" : "";
+  if (!slug || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (wallpaperVideo) {
+      wallpaperVideo.pause();
+      wallpaperVideo.remove();
+      wallpaperVideo.removeAttribute("src");
+      wallpaperVideo.load();
+      wallpaperVideo = undefined;
+    }
+    return;
+  }
+  if (!wallpaperVideo) {
+    wallpaperVideo = document.createElement("video");
+    wallpaperVideo.className = "wallpaper-video";
+    wallpaperVideo.setAttribute("aria-hidden", "true");
+    wallpaperVideo.muted = true;
+    wallpaperVideo.loop = true;
+    wallpaperVideo.playsInline = true;
+  }
+  if (wallpaperVideo.parentElement !== target) target.prepend(wallpaperVideo);
+  const source = "assets/" + slug + ".mp4";
+  if (wallpaperVideo.getAttribute("src") !== source) {
+    wallpaperVideo.poster = "assets/" + slug + ".jpg";
+    wallpaperVideo.src = source;
+  }
+  wallpaperVideo.play().catch(() => {});
+}
+wallpaperMotion.addEventListener("change", syncWallpaperVideo);
+
 function setWallpaper(cls, silent){
   const d = $("#desktop");
   WP_ALL.forEach(c => d.classList.remove(c));
   d.classList.add(cls);
+  syncWallpaperVideo();
   $$(".wp-thumb, .wp-card").forEach(t => t.classList.toggle("sel", t.dataset.wp === cls));
   if(typeof settingsStore !== "undefined"){ settingsStore.wallpaper = cls; saveSettings(); }
-  const names = { "wp-streaks":"Streaks (Default)", "wp-dusk":"Dusk", "wp-tide":"Tide", "wp-lagoon":"Lagoon", "wp-ember":"Ember", "wp-graphite":"Graphite", "wp-waves":"Sonoma Waves", "wp-crimson":"Crimson Streak", "wp-aurora":"Aurora", "wp-sunset":"Sunset Coast" };
+  const names = { "wp-streaks":"Streaks (Default)", "wp-dusk":"Dusk", "wp-tide":"Tide", "wp-lagoon":"Lagoon", "wp-ember":"Ember", "wp-graphite":"Graphite", "wp-waves":"Sonoma Waves", "wp-crimson":"Crimson Streak", "wp-aurora":"Aurora", "wp-sunset":"Sunset Coast", "wp-green-hills":"Green Hills", "wp-goku":"Goku Ultra Instinct", "wp-vice-city":"Vice City" };
   if(!silent) toast("Wallpaper: " + (names[cls] || cls));
 }
 document.addEventListener("click", (e)=>{
