@@ -3,6 +3,7 @@
 function installSpotlight() {
   const overlay = document.getElementById('spotlight');
   const input = document.getElementById('spotInput');
+  const closeButton = document.getElementById('spotClose');
   const results = document.getElementById('spotRes');
   let selected = 0;
   let previousFocus;
@@ -61,6 +62,13 @@ function installSpotlight() {
   }
 
   document.querySelectorAll('#spotBtn, #mobile-search').forEach(button => button.addEventListener('click', open));
+  closeButton.addEventListener('click', () => close());
+  overlay.addEventListener('keydown', event => {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      (document.activeElement === input ? closeButton : input).focus();
+    }
+  });
   input.addEventListener('input', render);
   input.addEventListener('keydown', event => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {

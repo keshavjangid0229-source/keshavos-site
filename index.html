@@ -242,10 +242,11 @@
 
 <!-- SPOTLIGHT -->
 <div class="overlay" id="spotlight">
-  <div class="spot-box" role="dialog" aria-label="Search KeshavOS">
+  <div class="spot-box" role="dialog" aria-modal="true" aria-label="Search KeshavOS">
     <div class="s-in">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="7"/><path d="M21 21l-5.5-5.5"/></svg>
       <input id="spotInput" type="text" placeholder="Search apps and projects" autocomplete="off" role="combobox" aria-label="Search apps and projects" aria-controls="spotRes" aria-expanded="false" />
+      <button type="button" id="spotClose" aria-label="Close Spotlight">×</button>
     </div>
     <div class="spot-res" id="spotRes" role="listbox" aria-label="Search results"></div>
   </div>

@@ -715,6 +715,8 @@ html[data-reduce-transparency="true"] #menubar{background:rgba(16,16,22,.97); ba
 .spot-box .s-in{display:flex; align-items:center; gap:11px; padding:13px 16px}
 .spot-box input{flex:1; background:none; border:none; outline:none; color:#fff; font-size:21px; font-weight:300}
 .spot-box input::placeholder{color:rgba(255,255,255,.5)}
+#spotClose{flex:none; min-width:32px; min-height:32px; border-radius:6px; color:#fff; font-size:23px; line-height:1}
+#spotClose:hover, #spotClose:focus-visible{background:rgba(255,255,255,.17)}
 .spot-res{max-height:300px; overflow:auto; padding:0 6px 6px}
 .spot-res button{display:flex; align-items:center; gap:12px; width:100%; padding:8px 10px; border-radius:9px; color:#fff; font-size:14.5px; text-align:left}
 .spot-res button.sel, .spot-res button:hover{background:var(--accent)}
